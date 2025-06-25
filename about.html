@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>About - TipCalc</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(to right, #f1f8e9, #e0f7fa);
+      font-family: 'Segoe UI', sans-serif;
+      padding-top: 60px;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      border-radius: 10px;
+      padding: 40px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      animation: fadeIn 1s ease-in-out;
+    }
+    h1, h2 {
+      color: #00796b;
+    }
+	.nav-link {
+      color: #00796b;
+      font-weight: 500;
+    }
+    .nav-link:hover {
+      color: #004d40;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 14px;
+      color: #555;
+      animation: fadeInUp 1s ease-in-out;
+    }
+    .icon-style {
+      color: #00796b;
+      margin-right: 8px;
+    }
+    .alert {
+      margin-top: 15px;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <script>
+    if (localStorage.getItem("isLoggedIn") !== "true") {
+      window.location.href = "login.html";
+    }
+  </script>
+  <nav class="navbar navbar-expand-lg bg-light fixed-top shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand text-success fw-bold" href="index.html">
+        <i class="bi bi-cash-coin"></i> TipCalc
+      </a>
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-house"></i> Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="calculator.html"><i class="bi bi-calculator"></i> Calculator</a></li>
+        <li class="nav-item"><a class="nav-link active" href="about.html"><i class="bi bi-info-circle"></i> About</a></li>
+        <li class="nav-item"><a class="nav-link" href="contact.html"><i class="bi bi-envelope"></i> Contact</a></li>
+        <li class="nav-item"><a class="nav-link" href="history.html"><i class="bi bi-clock-history"></i> History</a></li>
+        <li class="nav-item"><a class="nav-link text-danger" href="#" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+    <h1 class="text-center mb-4"><i class="bi bi-info-circle"></i> About TipCalc</h1>
+    <p class="lead">TipCalc is a simple, efficient, and user-friendly tool designed to help you calculate your restaurant tips and split bills with ease. Whether you're dining out with friends or just need a quick percentage calculation, TipCalc is here to help!</p>
+
+    <div id="infoToggleBox"></div>
+    <button class="btn btn-outline-success mb-4" onclick="toggleExtra()">
+      <i class="bi bi-eye"></i> Show More Info
+    </button>
+
+    <div id="extraInfo" style="display:none;">
+      <h2><i class="bi bi-gear icon-style"></i> Features</h2>
+      <ul>
+        <li>Calculate tip amount and total bill easily</li>
+        <li>Split the bill among multiple people</li>
+        <li>Store and review recent calculations using localStorage</li>
+        <li>Preset tip percentage buttons for fast access</li>
+      </ul>
+
+      <h2><i class="bi bi-laptop icon-style"></i> Technologies Used</h2>
+      <ul>
+        <li>HTML5, CSS3, JavaScript</li>
+        <li>Bootstrap 5 & Bootstrap Icons</li>
+        <li>Local Storage API</li>
+      </ul>
+
+      <h2><i class="bi bi-person-circle icon-style"></i> Developed By</h2>
+      <p>This app was developed as a beginner-friendly JavaScript project. It demonstrates key web development concepts including DOM manipulation, event handling, and data persistence using local storage.</p>
+    </div>
+  </div>
+
+  <footer class="mt-5">
+    &copy; 2025 TipCalc App | Built to simplify your dining experience 🍽️
+  </footer>
+
+  <script>
+    function toggleExtra() {
+      const info = document.getElementById("extraInfo");
+      const toggleBtn = document.querySelector("button");
+      if (info.style.display === "none") {
+        info.style.display = "block";
+        toggleBtn.innerHTML = '<i class="bi bi-eye-slash"></i> Hide Info';
+      } else {
+        info.style.display = "none";
+        toggleBtn.innerHTML = '<i class="bi bi-eye"></i> Show More Info';
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("isLoggedIn");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>

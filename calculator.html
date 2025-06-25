@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TipCalc - Calculator</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(to right, #f1f8e9, #e0f7fa);
+      font-family: 'Segoe UI', sans-serif;
+      padding-top: 60px;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      animation: fadeIn 1s ease-in-out;
+    }
+    h1 {
+      color: #00796b;
+    }
+	.nav-link {
+      color: #00796b;
+      font-weight: 500;
+    }
+    .nav-link:hover {
+      color: #004d40;
+    }
+    .form-label {
+      font-weight: 500;
+    }
+    #output {
+      background-color: #e0f2f1;
+      border-radius: 5px;
+      padding: 15px;
+      margin-top: 15px;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #004d40;
+      animation: fadeInUp 0.8s ease-in-out;
+    }
+    .tip-buttons .btn {
+      margin-right: 8px;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 14px;
+      color: #555;
+      animation: fadeInUp 1s ease-in-out;
+    }
+    .tooltip-icon {
+      color: #00796b;
+      cursor: help;
+    }
+    .alert {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg bg-light fixed-top shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand text-success fw-bold" href="index.html">
+        <i class="bi bi-cash-coin"></i> TipCalc
+      </a>
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-house"></i> Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="about.html"><i class="bi bi-info-circle"></i> About</a></li>
+		 <li class="nav-item"><a class="nav-link active" href="calculator.html"><i class="bi bi-calculator"></i> Calculator</a></li>
+        <li class="nav-item"><a class="nav-link" href="contact.html"><i class="bi bi-envelope"></i> Contact</a></li>
+        <li class="nav-item"><a class="nav-link" href="history.html"><i class="bi bi-clock-history"></i> History</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+    <h1 class="text-center mb-4"><i class="bi bi-calculator"></i> Tip Calculator</h1>
+    <div id="alertBox"></div>
+    <div class="mb-3">
+      <label for="bill" class="form-label">Enter Bill Amount ($): <i class="bi bi-info-circle tooltip-icon" title="Total cost before tip."></i></label>
+      <input type="number" id="bill" class="form-control" placeholder="e.g. 100">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Choose Tip Percentage:</label>
+      <div class="tip-buttons mb-2">
+        <button type="button" class="btn btn-outline-success" onclick="setTip(10)">10%</button>
+        <button type="button" class="btn btn-outline-success" onclick="setTip(15)">15%</button>
+        <button type="button" class="btn btn-outline-success" onclick="setTip(20)">20%</button>
+      </div>
+      <input type="number" id="tip" class="form-control" placeholder="Or enter custom %">
+    </div>
+    <div class="mb-3">
+      <label for="people" class="form-label">Number of People: <i class="bi bi-info-circle tooltip-icon" title="How many people will split the bill?"></i></label>
+      <input type="number" id="people" class="form-control" placeholder="e.g. 2">
+    </div>
+    <div class="d-flex justify-content-between">
+      <button class="btn btn-secondary" onclick="resetForm()">
+        <i class="bi bi-arrow-counterclockwise"></i> Reset
+      </button>
+    </div>
+    <div id="output"></div>
+  </div>
+
+  <footer class="mt-5">
+    &copy; 2025 TipCalc App | Split bills easily 💰
+  </footer>
+
+  <script>
+    function showAlert(message, type = 'danger') {
+      const alertBox = document.getElementById("alertBox");
+      alertBox.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show" role="alert">
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>`;
+    }
+
+    function calculateTip() {
+      const bill = parseFloat(document.getElementById("bill").value);
+      const tipPercent = parseFloat(document.getElementById("tip").value);
+      const people = parseInt(document.getElementById("people").value);
+
+      if (isNaN(bill) || isNaN(tipPercent) || isNaN(people) || people <= 0) {
+        showAlert("Please enter valid values.", "danger");
+        document.getElementById("output").innerHTML = "";
+        return;
+      }
+
+      const tipAmount = bill * (tipPercent / 100);
+      const totalAmount = bill + tipAmount;
+      const amountPerPerson = totalAmount / people;
+
+      showAlert("Calculation successful!", "success");
+      document.getElementById("output").innerHTML = `
+        💸 Tip: $${tipAmount.toFixed(2)}<br>
+        🧾 Total: $${totalAmount.toFixed(2)}<br>
+        👥 Per Person: $${amountPerPerson.toFixed(2)}
+      `;
+
+      const historyEntry = {
+        bill: bill.toFixed(2),
+        tip: tipPercent,
+        people: people,
+        perPerson: amountPerPerson.toFixed(2),
+        time: new Date().toLocaleString()
+      };
+      const history = JSON.parse(localStorage.getItem("tipHistory")) || [];
+      history.push(historyEntry);
+      if (history.length > 10) history.shift();
+      localStorage.setItem("tipHistory", JSON.stringify(history));
+    }
+
+    function resetForm() {
+      document.getElementById("bill").value = "";
+      document.getElementById("tip").value = "";
+      document.getElementById("people").value = "";
+      document.getElementById("output").innerHTML = "";
+      document.getElementById("alertBox").innerHTML = "";
+    }
+
+    function setTip(value) {
+      document.getElementById("tip").value = value;
+      calculateTip();
+    }
+
+    document.querySelectorAll("input").forEach(input => {
+      input.addEventListener("input", calculateTip);
+    });
+  </script>
+</body>
+</html>
