@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>TipCalc - Calculator</title>
+  <title>History - TipCalc</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
   <style>
@@ -13,39 +13,27 @@
       min-height: 100vh;
     }
     .container {
-      max-width: 600px;
+      max-width: 800px;
       margin: auto;
       background: #fff;
       border-radius: 10px;
-      padding: 30px;
+      padding: 40px;
       box-shadow: 0 0 15px rgba(0,0,0,0.1);
       animation: fadeIn 1s ease-in-out;
     }
     h1 {
       color: #00796b;
     }
-	.nav-link {
+    .nav-link {
       color: #00796b;
       font-weight: 500;
     }
     .nav-link:hover {
       color: #004d40;
     }
-    .form-label {
-      font-weight: 500;
-    }
-    #output {
-      background-color: #e0f2f1;
-      border-radius: 5px;
-      padding: 15px;
-      margin-top: 15px;
-      font-size: 1.1rem;
-      font-weight: 500;
-      color: #004d40;
-      animation: fadeInUp 0.8s ease-in-out;
-    }
-    .tip-buttons .btn {
-      margin-right: 8px;
+    .history-item {
+      border-bottom: 1px solid #ccc;
+      padding: 10px 0;
     }
     footer {
       text-align: center;
@@ -53,15 +41,6 @@
       font-size: 14px;
       color: #555;
       animation: fadeInUp 1s ease-in-out;
-    }
-    .tooltip-icon {
-      color: #00796b;
-      cursor: help;
-    }
-    .alert {
-      margin-top: 15px;
-      padding: 10px;
-      border-radius: 5px;
     }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-20px); }
@@ -74,6 +53,14 @@
   </style>
 </head>
 <body>
+  <script>
+    // Redirect to login if not authenticated
+    if (localStorage.getItem("isLoggedIn") !== "true") {
+      window.location.href = "login.html";
+    }
+  </script>
+
+  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg bg-light fixed-top shadow-sm">
     <div class="container-fluid">
       <a class="navbar-brand text-success fw-bold" href="index.html">
@@ -82,105 +69,56 @@
       <ul class="navbar-nav ms-auto">
         <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-house"></i> Home</a></li>
         <li class="nav-item"><a class="nav-link" href="about.html"><i class="bi bi-info-circle"></i> About</a></li>
-		 <li class="nav-item"><a class="nav-link active" href="calculator.html"><i class="bi bi-calculator"></i> Calculator</a></li>
+        <li class="nav-item"><a class="nav-link" href="calculator.html"><i class="bi bi-calculator"></i> Calculator</a></li>
         <li class="nav-item"><a class="nav-link" href="contact.html"><i class="bi bi-envelope"></i> Contact</a></li>
-        <li class="nav-item"><a class="nav-link" href="history.html"><i class="bi bi-clock-history"></i> History</a></li>
+        <li class="nav-item"><a class="nav-link active" href="history.html"><i class="bi bi-clock-history"></i> History</a></li>
+        <li class="nav-item"><a class="nav-link text-danger" href="signup.html" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
       </ul>
     </div>
   </nav>
 
+  <!-- Main Content -->
   <div class="container mt-5">
-    <h1 class="text-center mb-4"><i class="bi bi-calculator"></i> Tip Calculator</h1>
-    <div id="alertBox"></div>
-    <div class="mb-3">
-      <label for="bill" class="form-label">Enter Bill Amount ($): <i class="bi bi-info-circle tooltip-icon" title="Total cost before tip."></i></label>
-      <input type="number" id="bill" class="form-control" placeholder="e.g. 100">
-    </div>
-    <div class="mb-3">
-      <label class="form-label">Choose Tip Percentage:</label>
-      <div class="tip-buttons mb-2">
-        <button type="button" class="btn btn-outline-success" onclick="setTip(10)">10%</button>
-        <button type="button" class="btn btn-outline-success" onclick="setTip(15)">15%</button>
-        <button type="button" class="btn btn-outline-success" onclick="setTip(20)">20%</button>
-      </div>
-      <input type="number" id="tip" class="form-control" placeholder="Or enter custom %">
-    </div>
-    <div class="mb-3">
-      <label for="people" class="form-label">Number of People: <i class="bi bi-info-circle tooltip-icon" title="How many people will split the bill?"></i></label>
-      <input type="number" id="people" class="form-control" placeholder="e.g. 2">
-    </div>
-    <div class="d-flex justify-content-between">
-      <button class="btn btn-secondary" onclick="resetForm()">
-        <i class="bi bi-arrow-counterclockwise"></i> Reset
-      </button>
-    </div>
-    <div id="output"></div>
+    <h1 class="text-center mb-4"><i class="bi bi-clock-history"></i> Calculation History</h1>
+    <div id="historyList" class="mb-4"></div>
+    <button class="btn btn-danger" onclick="clearHistory()"><i class="bi bi-trash"></i> Clear History</button>
   </div>
 
   <footer class="mt-5">
-    &copy; 2025 TipCalc App | Split bills easily 💰
+    &copy; 2025 TipCalc App | Track your tip calculations 🧾
   </footer>
 
+  <!-- JavaScript -->
   <script>
-    function showAlert(message, type = 'danger') {
-      const alertBox = document.getElementById("alertBox");
-      alertBox.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show" role="alert">
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>`;
-    }
+    const historyList = document.getElementById("historyList");
+    const savedHistory = JSON.parse(localStorage.getItem("tipHistory")) || [];
 
-    function calculateTip() {
-      const bill = parseFloat(document.getElementById("bill").value);
-      const tipPercent = parseFloat(document.getElementById("tip").value);
-      const people = parseInt(document.getElementById("people").value);
-
-      if (isNaN(bill) || isNaN(tipPercent) || isNaN(people) || people <= 0) {
-        showAlert("Please enter valid values.", "danger");
-        document.getElementById("output").innerHTML = "";
+    function displayHistory() {
+      if (savedHistory.length === 0) {
+        historyList.innerHTML = '<div class="alert alert-warning">No history found.</div>';
         return;
       }
 
-      const tipAmount = bill * (tipPercent / 100);
-      const totalAmount = bill + tipAmount;
-      const amountPerPerson = totalAmount / people;
-
-      showAlert("Calculation successful!", "success");
-      document.getElementById("output").innerHTML = `
-        💸 Tip: $${tipAmount.toFixed(2)}<br>
-        🧾 Total: $${totalAmount.toFixed(2)}<br>
-        👥 Per Person: $${amountPerPerson.toFixed(2)}
-      `;
-
-      const historyEntry = {
-        bill: bill.toFixed(2),
-        tip: tipPercent,
-        people: people,
-        perPerson: amountPerPerson.toFixed(2),
-        time: new Date().toLocaleString()
-      };
-      const history = JSON.parse(localStorage.getItem("tipHistory")) || [];
-      history.push(historyEntry);
-      if (history.length > 10) history.shift();
-      localStorage.setItem("tipHistory", JSON.stringify(history));
+      historyList.innerHTML = savedHistory.map((item, index) => `
+        <div class="history-item">
+          <strong>#${index + 1}</strong><br>
+          Bill: ₹${item.bill} | Tip: ${item.tip}% | People: ${item.people}<br>
+          Total: ₹${item.total} | Per Person: ₹${item.perPerson}
+        </div>
+      `).join("");
     }
 
-    function resetForm() {
-      document.getElementById("bill").value = "";
-      document.getElementById("tip").value = "";
-      document.getElementById("people").value = "";
-      document.getElementById("output").innerHTML = "";
-      document.getElementById("alertBox").innerHTML = "";
+    function clearHistory() {
+      localStorage.removeItem("tipHistory");
+      historyList.innerHTML = '<div class="alert alert-info">History cleared.</div>';
     }
 
-    function setTip(value) {
-      document.getElementById("tip").value = value;
-      calculateTip();
+    function logout() {
+      localStorage.removeItem("isLoggedIn");
+      window.location.href = "login.html";
     }
 
-    document.querySelectorAll("input").forEach(input => {
-      input.addEventListener("input", calculateTip);
-    });
+    displayHistory();
   </script>
 </body>
 </html>
