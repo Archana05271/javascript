@@ -24,7 +24,7 @@
     h1 {
       color: #00796b;
     }
-	.nav-link {
+    .nav-link {
       color: #00796b;
       font-weight: 500;
     }
@@ -53,56 +53,72 @@
   </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg bg-light fixed-top shadow-sm">
-  <div class="container-fluid">
-    <a class="navbar-brand text-success fw-bold" href="index.html">
-      <i class="bi bi-cash-coin"></i> TipCalc
-    </a>
-    <ul class="navbar-nav ms-auto">
-      <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-house"></i> Home</a></li>
-      <li class="nav-item"><a class="nav-link" href="calculator.html"><i class="bi bi-calculator"></i> Calculator</a></li>
-      <li class="nav-item"><a class="nav-link" href="about.html"><i class="bi bi-info-circle"></i> About</a></li>
-      <li class="nav-item"><a class="nav-link" href="contact.html"><i class="bi bi-envelope"></i> Contact</a></li>
-      <li class="nav-item"><a class="nav-link active" href="history.html"><i class="bi bi-clock-history"></i> History</a></li>
-    </ul>
+  <script>
+    // Redirect to login if not authenticated
+    if (localStorage.getItem("isLoggedIn") !== "true") {
+      window.location.href = "login.html";
+    }
+  </script>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg bg-light fixed-top shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand text-success fw-bold" href="index.html">
+        <i class="bi bi-cash-coin"></i> TipCalc
+      </a>
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-house"></i> Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="about.html"><i class="bi bi-info-circle"></i> About</a></li>
+        <li class="nav-item"><a class="nav-link" href="calculator.html"><i class="bi bi-calculator"></i> Calculator</a></li>
+        <li class="nav-item"><a class="nav-link" href="contact.html"><i class="bi bi-envelope"></i> Contact</a></li>
+        <li class="nav-item"><a class="nav-link active" href="history.html"><i class="bi bi-clock-history"></i> History</a></li>
+        <li class="nav-item"><a class="nav-link text-danger" href="signup.html" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container mt-5">
+    <h1 class="text-center mb-4"><i class="bi bi-clock-history"></i> Calculation History</h1>
+    <div id="historyList" class="mb-4"></div>
+    <button class="btn btn-danger" onclick="clearHistory()"><i class="bi bi-trash"></i> Clear History</button>
   </div>
-</nav>
 
-<div class="container mt-5">
-  <h1 class="text-center mb-4"><i class="bi bi-clock-history"></i> Calculation History</h1>
-  <div id="historyList" class="mb-4"></div>
-  <button class="btn btn-danger" onclick="clearHistory()"><i class="bi bi-trash"></i> Clear History</button>
-</div>
+  <footer class="mt-5">
+    &copy; 2025 TipCalc App | Track your tip calculations 🧾
+  </footer>
 
-<footer class="mt-5">
-  &copy; 2025 TipCalc App | Track your tip calculations 🧾
-</footer>
+  <!-- JavaScript -->
+  <script>
+    const historyList = document.getElementById("historyList");
+    const savedHistory = JSON.parse(localStorage.getItem("tipHistory")) || [];
 
-<script>
-  const historyList = document.getElementById("historyList");
-  const savedHistory = JSON.parse(localStorage.getItem("tipHistory")) || [];
+    function displayHistory() {
+      if (savedHistory.length === 0) {
+        historyList.innerHTML = '<div class="alert alert-warning">No history found.</div>';
+        return;
+      }
 
-  function displayHistory() {
-    if (savedHistory.length === 0) {
-      historyList.innerHTML = '<div class="alert alert-warning">No history found.</div>';
-      return;
+      historyList.innerHTML = savedHistory.map((item, index) => `
+        <div class="history-item">
+          <strong>#${index + 1}</strong><br>
+          Bill: ₹${item.bill} | Tip: ${item.tip}% | People: ${item.people}<br>
+          Total: ₹${item.total} | Per Person: ₹${item.perPerson}
+        </div>
+      `).join("");
     }
 
-    historyList.innerHTML = savedHistory.map((item, index) => `
-      <div class="history-item">
-        <strong>#${index + 1}</strong><br>
-        Bill: ₹${item.bill} | Tip: ${item.tip}% | People: ${item.people}<br>
-        Total: ₹${item.total} | Per Person: ₹${item.perPerson}
-      </div>
-    `).join("");
-  }
+    function clearHistory() {
+      localStorage.removeItem("tipHistory");
+      historyList.innerHTML = '<div class="alert alert-info">History cleared.</div>';
+    }
 
-  function clearHistory() {
-    localStorage.removeItem("tipHistory");
-    historyList.innerHTML = '<div class="alert alert-info">History cleared.</div>';
-  }
+    function logout() {
+      localStorage.removeItem("isLoggedIn");
+      window.location.href = "login.html";
+    }
 
-  displayHistory();
-</script>
+    displayHistory();
+  </script>
 </body>
 </html>
