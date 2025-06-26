@@ -59,6 +59,11 @@
       </div>
       <button type="submit" class="btn btn-success"><i class="bi bi-box-arrow-in-right"></i> Login</button>
     </form>
+
+    <!-- Sign up link -->
+    <p class="text-center mt-3">
+      Don't have an account? <a href="signup.html">Sign Up</a>
+    </p>
   </div>
 
   <script>
@@ -68,12 +73,15 @@
       const pass = document.getElementById("password").value;
       const alertBox = document.getElementById("loginAlert");
 
-      // Dummy login check
-      if (user === "admin" && pass === "1234") {
+      const storedUser = localStorage.getItem("registeredUser");
+      const storedPass = localStorage.getItem("registeredPass");
+
+      if (user === storedUser && pass === storedPass) {
         alertBox.innerHTML = '<div class="alert alert-success">Login successful! Redirecting...</div>';
+        localStorage.setItem("isLoggedIn", "true");
         setTimeout(() => window.location.href = "index.html", 1000);
       } else {
-        alertBox.innerHTML = '<div class="alert alert-danger">Invalid credentials. Try admin/1234.</div>';
+        alertBox.innerHTML = '<div class="alert alert-danger">Invalid credentials. Please try again.</div>';
       }
     });
   </script>
